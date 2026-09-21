@@ -41,3 +41,4 @@ flutter run
 - Marking is one-way (no unmark)
 - NFC payload matched against `student_id` or `admission_no` in the loaded list
 - Success feedback: vibration + beep + toast
+# canteen_lunch_attendance
