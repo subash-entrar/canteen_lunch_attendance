@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
 import '../constants/app_styles.dart';
+import '../core/storage/school_prefs.dart';
 import 'home_screen.dart';
+import 'school_setup_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -33,11 +35,20 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _bootstrap() async {
-    await Future<void>.delayed(const Duration(milliseconds: 1600));
+    final results = await Future.wait<Object?>([
+      Future<void>.delayed(const Duration(milliseconds: 1600)),
+      SchoolPrefs.hasSchoolId(),
+    ]);
     if (!mounted) return;
+
+    final hasSchoolId = results[1] as bool;
+    final next = hasSchoolId
+        ? const HomeScreen()
+        : const SchoolSetupScreen();
+
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const HomeScreen(),
+        pageBuilder: (_, __, ___) => next,
         transitionsBuilder: (_, animation, __, child) {
           return FadeTransition(opacity: animation, child: child);
         },
@@ -73,7 +84,10 @@ class _SplashScreenState extends State<SplashScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(18),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 22,
+                    vertical: 18,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.white,
                     borderRadius: BorderRadius.circular(24),
@@ -86,20 +100,15 @@ class _SplashScreenState extends State<SplashScreen>
                     ],
                   ),
                   child: Image.asset(
-                    'assets/images/splash_launcher.png',
-                    width: 96,
-                    height: 96,
+                    'assets/images/ssvm_logo.jpg',
+                    width: 220,
+                    height: 56,
                     fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => Image.asset(
-                      'assets/images/splash_launcher.png',
-                      width: 96,
-                      height: 96,
-                    ),
                   ),
                 ),
                 const SizedBox(height: 28),
                 Text(
-                  'Ruh Meals',
+                  'SSVM Meal',
                   style: AppStyles.heading.copyWith(
                     color: AppColors.white,
                     fontSize: 26,

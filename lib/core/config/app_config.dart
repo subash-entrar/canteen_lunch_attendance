@@ -2,7 +2,9 @@ class AppConfig {
   AppConfig._();
 
   static const String baseUrl = 'https://entrar.in';
-  static const String apiFolder = 'RUHCTNAa8024205482ca3a9ccd5838d2acefd';
+//static const String apiFolder = 'RUHCTNAa8024205482ca3a9ccd5838d2acefd';
+  static const String apiFolder = 'CTNAa8024205482ca3a9ccd5838d2acefd';
+
   static const String apiBase = '$baseUrl/$apiFolder';
 
   static const String markLunchAttendanceUrl =
@@ -16,7 +18,8 @@ class AppConfig {
       '$apiBase/get_student_lunch_attendance_report.php';
 
   /// School is fixed server-side; kept here for documentation only.
-  static const int schoolId = 260;
+//   static const int schoolId = 260; // RUH
+//   static const int schoolId = 253; // SSVM
 
   static const int successStatus = 1;
 }

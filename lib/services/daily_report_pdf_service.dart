@@ -55,7 +55,7 @@ class DailyReportPdfService {
 
     final doc = pw.Document(
       title: 'Lunch Report $displayDate',
-      author: 'RUH Canteen Lunch Attendance',
+      author: 'SSVM Canteen Lunch Attendance',
     );
 
     doc.addPage(
@@ -176,7 +176,7 @@ class DailyReportPdfService {
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         pw.Text(
-          'RUH Canteen',
+          'SSVM Canteen',
           style: pw.TextStyle(
             color: _navy,
             fontSize: 11,

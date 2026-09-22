@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_styles.dart';
 import '../models/student_model.dart';
+import 'student_avatar.dart';
 
 enum StudentTileStyle { list, grid }
 
@@ -78,7 +79,7 @@ class _ListTile extends StatelessWidget {
           ),
           child: Row(
             children: [
-              _Avatar(student: student, size: 40),
+              StudentAvatar(student: student, size: 48),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(
@@ -186,7 +187,11 @@ class _GridTile extends StatelessWidget {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  _Avatar(student: student, size: 58, radius: 8),
+                  StudentAvatar(
+                    student: student,
+                    size: 58,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   if (isMarking)
                     const Positioned.fill(
                       child: Center(
@@ -251,57 +256,6 @@ class _GridTile extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _Avatar extends StatelessWidget {
-  const _Avatar({
-    required this.student,
-    this.size = 40,
-    this.radius,
-  });
-
-  final StudentModel student;
-  final double size;
-  final double? radius;
-
-  @override
-  Widget build(BuildContext context) {
-    final placeholder = student.gender.toLowerCase().startsWith('f')
-        ? 'assets/images/girl_avatar.png'
-        : 'assets/images/boy_avatar.png';
-    final borderRadius = BorderRadius.circular(radius ?? 8);
-
-    return ClipRRect(
-      borderRadius: borderRadius,
-      child: SizedBox(
-        width: size + 15,
-        height: size + 15,
-        child: student.profilePhoto.trim().isEmpty
-            ? Image.asset(placeholder, fit: BoxFit.cover)
-            : Image.network(
-                student.profilePhoto,
-                fit: BoxFit.fill,
-                errorBuilder: (_, __, ___) =>
-                    Image.asset(placeholder, fit: BoxFit.cover),
-                loadingBuilder: (context, child, progress) {
-                  if (progress == null) return child;
-                  return Container(
-                    color: AppColors.primary.withValues(alpha: 0.08),
-                    alignment: Alignment.center,
-                    child: Text(
-                      student.initials,
-                      style: TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w700,
-                        fontSize: size * 0.28,
-                      ),
-                    ),
-                  );
-                },
-              ),
       ),
     );
   }

@@ -11,7 +11,7 @@ class CanteenLunchApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Canteen Lunch Attendance',
+      title: 'SSVM Meal',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
@@ -37,7 +37,7 @@ class CanteenLunchApp extends StatelessWidget {
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: AppColors.accent,
-          foregroundColor: AppColors.navy,
+          foregroundColor: AppColors.primary,
         ),
       ),
       home: const SplashScreen(),

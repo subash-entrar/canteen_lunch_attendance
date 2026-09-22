@@ -167,4 +167,16 @@ class StudentsProvider extends ChangeNotifier {
       ..addAll(next);
     notifyListeners();
   }
+
+  /// Clears cached directory when switching schools.
+  void resetForSchoolChange() {
+    _students = [];
+    _isLoading = false;
+    _error = null;
+    _searchQuery = '';
+    _paymentFilter = PaymentFilter.all;
+    _sortOrder = StudentSortOrder.none;
+    _selectedSections.clear();
+    notifyListeners();
+  }
 }

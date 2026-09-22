@@ -6,6 +6,7 @@ import '../core/utils/app_date_utils.dart';
 import '../models/student_lunch_attendance_report.dart';
 import '../models/student_model.dart';
 import '../services/lunch_attendance_service.dart';
+import '../widgets/student_avatar.dart';
 import '../widgets/summary_stat_card.dart';
 
 enum _ReportPeriod { days7, days15, days30, custom }
@@ -306,10 +307,6 @@ class _DetailAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final placeholder = student.gender.toLowerCase().startsWith('f')
-        ? 'assets/images/girl_avatar.png'
-        : 'assets/images/boy_avatar.png';
-
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
@@ -319,35 +316,11 @@ class _DetailAvatar extends StatelessWidget {
           width: 2,
         ),
       ),
-      child: ClipRRect(
+      child: StudentAvatar(
+        student: student,
+        size: 96,
         borderRadius: BorderRadius.circular(11),
-        child: SizedBox(
-          width: 96,
-          height: 96,
-          child: student.profilePhoto.trim().isEmpty
-              ? Image.asset(placeholder, fit: BoxFit.cover)
-              : Image.network(
-                  student.profilePhoto,
-                  fit: BoxFit.fill,
-                  errorBuilder: (_, __, ___) =>
-                      Image.asset(placeholder, fit: BoxFit.cover),
-                  loadingBuilder: (context, child, progress) {
-                    if (progress == null) return child;
-                    return Container(
-                      color: AppColors.primary.withValues(alpha: 0.08),
-                      alignment: Alignment.center,
-                      child: Text(
-                        student.initials,
-                        style: const TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 24,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-        ),
+        fit: BoxFit.cover,
       ),
     );
   }

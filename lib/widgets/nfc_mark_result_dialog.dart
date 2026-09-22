@@ -6,6 +6,7 @@ import '../constants/app_colors.dart';
 import '../constants/app_styles.dart';
 import '../models/student_model.dart';
 import '../providers/attendance_provider.dart';
+import 'student_avatar.dart';
 
 /// Shows a compact result dialog after an NFC card scan.
 /// Auto-closes after [autoCloseDuration] or when tapped outside.
@@ -151,10 +152,6 @@ class _StudentAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final placeholder = student.gender.toLowerCase().startsWith('f')
-        ? 'assets/images/girl_avatar.png'
-        : 'assets/images/boy_avatar.png';
-
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
@@ -164,35 +161,10 @@ class _StudentAvatar extends StatelessWidget {
           width: 2,
         ),
       ),
-      child: ClipRRect(
+      child: StudentAvatar(
+        student: student,
+        size: 64,
         borderRadius: BorderRadius.circular(9),
-        child: SizedBox(
-          width: 64,
-          height: 64,
-          child: student.profilePhoto.trim().isEmpty
-              ? Image.asset(placeholder, fit: BoxFit.cover)
-              : Image.network(
-                  student.profilePhoto,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) =>
-                      Image.asset(placeholder, fit: BoxFit.cover),
-                  loadingBuilder: (context, child, progress) {
-                    if (progress == null) return child;
-                    return Container(
-                      color: AppColors.primary.withValues(alpha: 0.08),
-                      alignment: Alignment.center,
-                      child: Text(
-                        student.initials,
-                        style: const TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-        ),
       ),
     );
   }

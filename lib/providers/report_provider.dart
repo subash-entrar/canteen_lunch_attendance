@@ -346,4 +346,17 @@ class ReportProvider extends ChangeNotifier {
     _dailySortOrder = StudentSortOrder.none;
     _dailySelectedSections.clear();
   }
+
+  /// Clears cached reports when switching schools.
+  void resetForSchoolChange() {
+    _monthlyReport = null;
+    _dailyReport = null;
+    _isLoadingMonthly = false;
+    _isLoadingDaily = false;
+    _monthlyError = null;
+    _dailyError = null;
+    _monthlyStale = false;
+    clearDaily();
+    notifyListeners();
+  }
 }

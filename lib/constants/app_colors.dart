@@ -1,29 +1,35 @@
 import 'package:flutter/material.dart';
 
-/// RUH brand palette — aligned with EntrarRuh [AppTheme].
+/// SSVM Institutions brand palette — blue, white, light orange, light green.
 class AppColors {
   AppColors._();
 
-  static const Color navy = Color(0xFF1A2B47);
-  static const Color yellow = Color(0xFFE9A124);
-  static const Color lightBlue = Color(0xFF99C9E7);
-  static const Color orange = Color(0xFFD97706);
+  /// Logo blue sampled from [assets/images/ssvm_logo.jpg].
+  static const Color navy = Color(0xFF254598);
+  static const Color lightOrange = Color(0xFFFFB74D);
+  static const Color lightGreen = Color(0xFF81C784);
+  static const Color softBlue = Color(0xFF90CAF9);
   static const Color white = Color(0xFFFFFFFF);
-  static const Color surface = Color(0xFFF8F9FA);
+  static const Color surface = Color(0xFFF5F7FB);
   static const Color card = Color(0xFFFFFFFF);
-  static const Color textPrimary = Color(0xFF1A2B47);
-  static const Color textSecondary = Color(0xFF607D8B);
-  static const Color present = Color(0xFF309398);
-  static const Color absent = Color(0xFFE46471);
-  static const Color holiday = Color(0xFF99C9E7);
+  static const Color textPrimary = Color(0xFF1A2F66);
+  static const Color textSecondary = Color(0xFF5C6B8A);
+  static const Color present = Colors.green;
+  static const Color absent = Color(0xFFE57373);
+  static const Color holiday = softBlue;
 
   static const Color primary = navy;
-  static const Color primaryDark = Color(0xFF0F1A2E);
-  static const Color accent = yellow;
+  static const Color primaryDark = Color(0xFF1A3370);
+  static const Color accent = Colors.orangeAccent;
   static const Color background = surface;
-  static const Color success = present;
+  static const Color success = Colors.green;
   static const Color danger = absent;
-  static const Color warning = orange;
-  static const Color info = lightBlue;
-  static const Color divider = Color(0xFFE3E8EF);
+  static const Color warning = Colors.orangeAccent;
+  static const Color info = softBlue;
+  static const Color divider = Color(0xFFDCE3F0);
+
+  /// Legacy aliases used across the app.
+  static const Color yellow = Colors.yellowAccent;
+  static const Color lightBlue = softBlue;
+  static const Color orange = Colors.orangeAccent;
 }

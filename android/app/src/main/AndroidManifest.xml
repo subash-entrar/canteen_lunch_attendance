@@ -7,7 +7,7 @@
         android:required="true"/>
 
     <application
-        android:label="Ruh Meal"
+        android:label="SSVM Meal"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

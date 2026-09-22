@@ -1,5 +1,5 @@
 name: canteen_lunch_attendance
-description: RUH Canteen Lunch Attendance — NFC & list marking for school canteen.
+description: SSVM Meal — NFC & list marking for school canteen lunch attendance.
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -22,6 +22,7 @@ dependencies:
   pdf: ^3.11.3
   printing: ^5.14.3
   image: ^4.5.4
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
@@ -32,10 +33,10 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: false
-  image_path: "assets/images/splash_launcher.png"
+  image_path: "assets/images/ssvm_launcher.png"
   min_sdk_android: 21
-  adaptive_icon_background: "#1A2B47"
-  adaptive_icon_foreground: "assets/images/splash_launcher.png"
+  adaptive_icon_background: "#254598"
+  adaptive_icon_foreground: "assets/images/ssvm_launcher.png"
 
 flutter:
   uses-material-design: true

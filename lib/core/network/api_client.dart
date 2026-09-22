@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../storage/school_prefs.dart';
 import 'api_headers.dart';
 
 class ApiClient {
@@ -46,14 +47,21 @@ class ApiClient {
     required Map<String, dynamic> data,
   }) async {
     try {
+      final schoolId = await SchoolPrefs.getSchoolId();
+      if (schoolId == null || schoolId <= 0) {
+        throw DioApiException(
+          'School ID is not set. Please restart the app and enter a school ID.',
+        );
+      }
+      final body = {...data, 'school_id': schoolId};
       final headers = await _apiHeaders.build();
       if (kDebugMode) {
         debugPrint('[API] POST $url');
-        debugPrint('[API] body: $data');
+        debugPrint('[API] body: $body');
       }
       final response = await _dio.post<String>(
         url,
-        data: data,
+        data: body,
         options: Options(
           headers: headers,
           contentType: Headers.formUrlEncodedContentType,

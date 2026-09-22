@@ -356,6 +356,27 @@ class AttendanceProvider extends ChangeNotifier {
     await _haltNfcSession();
   }
 
+  /// Clears cached students/NFC state when switching schools.
+  Future<void> resetForSchoolChange() async {
+    await stopNfc();
+    _students = [];
+    _isLoading = false;
+    _isMarking = false;
+    _error = null;
+    _searchQuery = '';
+    _filter = AttendanceFilter.pending;
+    _paymentFilter = PaymentFilter.all;
+    _sortOrder = StudentSortOrder.none;
+    _selectedSections.clear();
+    _markingIds.clear();
+    _lastNfcTagKey = null;
+    _lastNfcAt = null;
+    _lastNfcEvent = null;
+    _nfcEventId = 0;
+    _nfcDesired = true;
+    notifyListeners();
+  }
+
   Future<void> _haltNfcSession() async {
     _nfcGeneration++;
     _isNfcListening = false;

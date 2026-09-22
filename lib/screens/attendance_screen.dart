@@ -11,6 +11,7 @@ import '../providers/report_provider.dart';
 import '../widgets/app_toast.dart';
 import '../widgets/confirm_mark_dialog.dart';
 import '../widgets/nfc_mark_result_dialog.dart';
+import '../widgets/school_logo_reset.dart';
 import '../widgets/student_list_filter_sheet.dart';
 import '../widgets/student_list_shimmer.dart';
 import '../widgets/student_tile.dart';
@@ -125,13 +126,24 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             titleSpacing: 12,
             title: Row(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    'assets/images/splash_launcher.png',
-                    width: 32,
-                    height: 32,
-                    fit: BoxFit.cover,
+                SchoolLogoReset(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: ColoredBox(
+                      color: AppColors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 4,
+                        ),
+                        child: Image.asset(
+                          'assets/images/ssvm_logo.jpg',
+                          width: 72,
+                          height: 24,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
