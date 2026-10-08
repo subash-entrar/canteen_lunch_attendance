@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/foundation.dart';
 
 import '../core/utils/app_date_utils.dart';
@@ -400,7 +402,7 @@ class AttendanceProvider extends ChangeNotifier {
           _emitNfcEvent(
             MarkResult(
               type: MarkResultType.error,
-              message: result.error ?? 'NFC scan failed',
+              message: 'NFC ${result.error ?? 'scan failed'}',
             ),
           );
           continue;
@@ -423,6 +425,24 @@ class AttendanceProvider extends ChangeNotifier {
         _emitNfcEvent(mark);
 
         await Future<void>.delayed(const Duration(milliseconds: 300));
+      }
+    } catch (e, st) {
+      developer.log(
+        'NFC loop error: $e',
+        name: 'AttendanceProvider',
+        error: e,
+        stackTrace: st,
+      );
+      try {
+        await _nfcService.stop();
+      } catch (_) {}
+      if (_nfcDesired && generation == _nfcGeneration) {
+        _emitNfcEvent(
+          MarkResult(
+            type: MarkResultType.error,
+            message: 'NFC session error — tap NFC to restart',
+          ),
+        );
       }
     } finally {
       if (generation == _nfcGeneration) {

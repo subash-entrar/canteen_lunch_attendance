@@ -9,6 +9,39 @@ abstract final class AppLayout {
 
   static double scrollBottomPadding(BuildContext context) =>
       bottomNavOverlay + MediaQuery.paddingOf(context).bottom + 16;
+
+  /// Matches [FabAboveBottomNav] — distance from scaffold bottom to FAB bottom.
+  static const double floatingEndPadding = 16;
+
+  static double fabBottomInset(BuildContext context) =>
+      floatingEndPadding +
+      bottomNavOverlay +
+      MediaQuery.paddingOf(context).bottom;
+
+  /// Bottom inset so [controlHeight] is vertically centered with the FAB.
+  static double fabAlignedBottomInset(
+    BuildContext context, {
+    required double controlHeight,
+    double fabSize = 56,
+  }) {
+    return fabBottomInset(context) + (fabSize - controlHeight) / 2;
+  }
+
+  /// Scroll-to-top button — bottom center, just above the floating home nav.
+  static double scrollToTopBottomInset(
+    BuildContext context, {
+    required bool aboveHomeBottomNav,
+  }) {
+    final safe = MediaQuery.paddingOf(context).bottom;
+    if (aboveHomeBottomNav) {
+      return safe + bottomNavBottomGap + bottomNavHeight + 4;
+    }
+    return safe + floatingEndPadding;
+  }
+
+  /// Horizontal space reserved for a right-side FAB (width + trailing padding).
+  static double fabHorizontalReserve({double fabSize = 56}) =>
+      fabSize + floatingEndPadding;
 }
 
 /// Positions the FAB above the home screen's floating bottom nav bar.

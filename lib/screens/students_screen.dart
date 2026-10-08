@@ -7,6 +7,7 @@ import '../constants/app_styles.dart';
 import '../models/student_model.dart';
 import '../providers/attendance_provider.dart';
 import '../providers/students_provider.dart';
+import '../widgets/scroll_to_top_host.dart';
 import '../widgets/student_list_filter_sheet.dart';
 import '../widgets/student_list_shimmer.dart';
 import '../widgets/student_tile.dart';
@@ -78,12 +79,15 @@ class _StudentsScreenState extends State<StudentsScreen> {
                 ),
             ],
           ),
-          body: RefreshIndicator(
-            color: AppColors.primary,
-            onRefresh: () => provider.loadStudents(),
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
+          body: ScrollToTopHost(
+            aboveHomeBottomNav: true,
+            builder: (context, scrollController) => RefreshIndicator(
+              color: AppColors.primary,
+              onRefresh: () => provider.loadStudents(),
+              child: CustomScrollView(
+                controller: scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
                 SliverToBoxAdapter(
                   child: _Toolbar(provider: provider),
                 ),
@@ -181,6 +185,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
                 ..._buildStudentSlivers(provider),
               ],
             ),
+          ),
           ),
         );
       },

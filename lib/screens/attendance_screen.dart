@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,6 +14,7 @@ import '../widgets/app_toast.dart';
 import '../widgets/confirm_mark_dialog.dart';
 import '../widgets/nfc_mark_result_dialog.dart';
 import '../widgets/school_logo_reset.dart';
+import '../widgets/scroll_to_top_host.dart';
 import '../widgets/student_list_filter_sheet.dart';
 import '../widgets/student_list_shimmer.dart';
 import '../widgets/student_tile.dart';
@@ -28,6 +31,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   final _searchController = TextEditingController();
   AttendanceProvider? _provider;
   int _seenNfcEventId = 0;
+  bool _nfcResultDialogOpen = false;
 
   @override
   void initState() {
@@ -54,26 +58,46 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     if (provider.nfcEventId != _seenNfcEventId) {
       _seenNfcEventId = provider.nfcEventId;
       final event = provider.lastNfcEvent;
-      if (event != null) {
-        if (_isNfcCardScanEvent(event)) {
-          if (event.type == MarkResultType.success ||
-              event.type == MarkResultType.alreadyMarked) {
-            context.read<ReportProvider>().markMonthlyStale();
-          }
-          showNfcMarkResultDialog(context, event);
-        } else {
-          showAppToast(
-            context,
-            event.message,
-            isError: event.type == MarkResultType.error,
-          );
-        }
-      }
+      if (event == null) return;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _presentNfcEvent(event);
+      });
     }
   }
 
-  bool _isNfcCardScanEvent(MarkResult event) {
-    return !event.message.startsWith('NFC ');
+  void _presentNfcEvent(MarkResult event) {
+    if (_shouldShowNfcMarkDialog(event)) {
+      if (event.type == MarkResultType.success ||
+          event.type == MarkResultType.alreadyMarked) {
+        context.read<ReportProvider>().markMonthlyStale();
+      }
+      unawaited(_showNfcMarkDialog(event));
+      return;
+    }
+
+    showAppToast(
+      context,
+      event.message,
+      isError: event.type == MarkResultType.error,
+    );
+  }
+
+  /// Dialog only for real mark outcomes (has a student). Hardware/status → toast.
+  bool _shouldShowNfcMarkDialog(MarkResult event) {
+    if (event.message.startsWith('NFC ')) return false;
+    return event.student != null;
+  }
+
+  Future<void> _showNfcMarkDialog(MarkResult event) async {
+    if (_nfcResultDialogOpen) return;
+    _nfcResultDialogOpen = true;
+    try {
+      await showNfcMarkResultDialog(context, event);
+    } finally {
+      _nfcResultDialogOpen = false;
+    }
   }
 
   Future<void> _handleMark(StudentModel student) async {
@@ -119,7 +143,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     return Consumer<AttendanceProvider>(
       builder: (context, provider, _) {
         final listening = provider.isNfcListening;
-        final busy = provider.isNfcBusy;
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
@@ -193,46 +216,50 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               ),
             ],
           ),
-          floatingActionButtonLocation: const FabAboveBottomNav(),
-          floatingActionButton: FloatingActionButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            onPressed: busy ? null : () => provider.toggleNfc(),
-            backgroundColor: listening ? AppColors.danger : AppColors.accent,
-            foregroundColor: listening ? AppColors.white : AppColors.navy,
-            tooltip: listening ? 'Stop NFC' : 'Start NFC',
-            child: busy
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Icon(listening ? Icons.stop_rounded : Icons.nfc_rounded),
-          ),
-          body: RefreshIndicator(
-            color: AppColors.primary,
-            onRefresh: () => provider.loadStudents(),
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: _FilterSummary(provider: provider),
-                ),
-                SliverToBoxAdapter(
-                  child: _AttendanceProgressBar(provider: provider),
-                ),
-                SliverToBoxAdapter(
-                  child: _PaymentFilterBar(provider: provider),
-                ),
-                SliverSearch(
-                  controller: _searchController,
-                  onChanged: provider.setSearchQuery,
-                  hasActiveFilters: provider.hasListFiltersActive,
-                  onFilterTap: () => _openListFilters(provider),
-                ),
-                ..._buildStudentSlivers(provider),
-              ],
+          // floatingActionButtonLocation: const FabAboveBottomNav(),
+          // floatingActionButton: FloatingActionButton(
+          //   shape: RoundedRectangleBorder(
+          //     borderRadius: BorderRadius.circular(12),
+          //   ),
+          //   onPressed: busy ? null : () => provider.toggleNfc(),
+          //   backgroundColor: listening ? AppColors.danger : AppColors.accent,
+          //   foregroundColor: listening ? AppColors.white : AppColors.navy,
+          //   tooltip: listening ? 'Stop NFC' : 'Start NFC',
+          //   child: busy
+          //       ? const SizedBox(
+          //           width: 20,
+          //           height: 20,
+          //           child: CircularProgressIndicator(strokeWidth: 2),
+          //         )
+          //       : Icon(listening ? Icons.stop_rounded : Icons.nfc_rounded),
+          // ),
+          body: ScrollToTopHost(
+            aboveHomeBottomNav: true,
+            builder: (context, scrollController) => RefreshIndicator(
+              color: AppColors.primary,
+              onRefresh: () => provider.loadStudents(),
+              child: CustomScrollView(
+                controller: scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: _FilterSummary(provider: provider),
+                  ),
+                  SliverToBoxAdapter(
+                    child: _AttendanceProgressBar(provider: provider),
+                  ),
+                  SliverToBoxAdapter(
+                    child: _PaymentFilterBar(provider: provider),
+                  ),
+                  SliverSearch(
+                    controller: _searchController,
+                    onChanged: provider.setSearchQuery,
+                    hasActiveFilters: provider.hasListFiltersActive,
+                    onFilterTap: () => _openListFilters(provider),
+                  ),
+                  ..._buildStudentSlivers(provider),
+                ],
+              ),
             ),
           ),
         );

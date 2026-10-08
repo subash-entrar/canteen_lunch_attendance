@@ -5,8 +5,17 @@ class FeedbackHelper {
   FeedbackHelper._();
 
   static final AudioPlayer _player = AudioPlayer();
+  static DateTime? _lastSuccessAt;
 
   static Future<void> success() async {
+    final now = DateTime.now();
+    if (_lastSuccessAt != null &&
+        now.difference(_lastSuccessAt!) < const Duration(milliseconds: 400)) {
+      await HapticFeedback.lightImpact();
+      return;
+    }
+    _lastSuccessAt = now;
+
     try {
       await HapticFeedback.heavyImpact();
       await _player.stop();

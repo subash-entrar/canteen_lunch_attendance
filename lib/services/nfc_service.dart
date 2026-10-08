@@ -60,6 +60,7 @@ class NfcService {
       try {
         await FlutterNfcKit.finish();
       } catch (_) {}
+      await Future<void>.delayed(const Duration(milliseconds: 80));
 
       if (_cancelled) return const NfcScanResult.cancelled();
 

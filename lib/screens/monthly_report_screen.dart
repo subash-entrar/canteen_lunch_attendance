@@ -7,6 +7,7 @@ import '../constants/app_styles.dart';
 import '../core/utils/app_date_utils.dart';
 import '../models/monthly_report_model.dart';
 import '../providers/report_provider.dart';
+import '../widgets/scroll_to_top_host.dart';
 import '../widgets/summary_stat_card.dart';
 import 'daily_report_screen.dart';
 
@@ -44,17 +45,21 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
                 ),
             ],
           ),
-          body: RefreshIndicator(
-            color: AppColors.primary,
-            onRefresh: () => provider.loadMonthly(),
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: _MonthToolbar(provider: provider, report: report),
-                ),
-                ..._buildBodySlivers(provider),
-              ],
+          body: ScrollToTopHost(
+            aboveHomeBottomNav: true,
+            builder: (context, scrollController) => RefreshIndicator(
+              color: AppColors.primary,
+              onRefresh: () => provider.loadMonthly(),
+              child: CustomScrollView(
+                controller: scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: _MonthToolbar(provider: provider, report: report),
+                  ),
+                  ..._buildBodySlivers(provider),
+                ],
+              ),
             ),
           ),
         );

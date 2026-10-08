@@ -10,6 +10,7 @@ import '../providers/report_provider.dart';
 import '../services/daily_report_pdf_service.dart';
 import '../widgets/app_toast.dart';
 import '../widgets/attendance_donut.dart';
+import '../widgets/scroll_to_top_host.dart';
 import '../widgets/student_list_filter_sheet.dart';
 import '../widgets/student_list_shimmer.dart';
 import '../widgets/student_tile.dart';
@@ -124,12 +125,15 @@ class _DailyReportScreenState extends State<DailyReportScreen> {
                 ),
             ],
           ),
-          body: RefreshIndicator(
-            color: AppColors.primary,
-            onRefresh: () => provider.loadDaily(widget.date),
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
+          body: ScrollToTopHost(
+            aboveHomeBottomNav: false,
+            builder: (context, scrollController) => RefreshIndicator(
+              color: AppColors.primary,
+              onRefresh: () => provider.loadDaily(widget.date),
+              child: CustomScrollView(
+                controller: scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
                 if (hasReport)
                   SliverToBoxAdapter(
                     child: _DailyInsightCard(provider: provider),
@@ -233,6 +237,7 @@ class _DailyReportScreenState extends State<DailyReportScreen> {
                 ..._buildBodySlivers(provider, hasReport: hasReport),
               ],
             ),
+          ),
           ),
         );
       },
