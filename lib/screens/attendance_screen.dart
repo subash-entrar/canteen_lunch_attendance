@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +29,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   final _searchController = TextEditingController();
   AttendanceProvider? _provider;
   int _seenNfcEventId = 0;
+  bool _nfcResultDialogOpen = false;
 
   @override
   void initState() {
@@ -53,26 +56,46 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     if (provider.nfcEventId != _seenNfcEventId) {
       _seenNfcEventId = provider.nfcEventId;
       final event = provider.lastNfcEvent;
-      if (event != null) {
-        if (_isNfcCardScanEvent(event)) {
-          if (event.type == MarkResultType.success ||
-              event.type == MarkResultType.alreadyMarked) {
-            context.read<ReportProvider>().markMonthlyStale();
-          }
-          showNfcMarkResultDialog(context, event);
-        } else {
-          showAppToast(
-            context,
-            event.message,
-            isError: event.type == MarkResultType.error,
-          );
-        }
-      }
+      if (event == null) return;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _presentNfcEvent(event);
+      });
     }
   }
 
-  bool _isNfcCardScanEvent(MarkResult event) {
-    return !event.message.startsWith('NFC ');
+  void _presentNfcEvent(MarkResult event) {
+    if (_shouldShowNfcMarkDialog(event)) {
+      if (event.type == MarkResultType.success ||
+          event.type == MarkResultType.alreadyMarked) {
+        context.read<ReportProvider>().markMonthlyStale();
+      }
+      unawaited(_showNfcMarkDialog(event));
+      return;
+    }
+
+    showAppToast(
+      context,
+      event.message,
+      isError: event.type == MarkResultType.error,
+    );
+  }
+
+  /// Dialog only for real mark outcomes (has a student). Hardware/status → toast.
+  bool _shouldShowNfcMarkDialog(MarkResult event) {
+    if (event.message.startsWith('NFC ')) return false;
+    return event.student != null;
+  }
+
+  Future<void> _showNfcMarkDialog(MarkResult event) async {
+    if (_nfcResultDialogOpen) return;
+    _nfcResultDialogOpen = true;
+    try {
+      await showNfcMarkResultDialog(context, event);
+    } finally {
+      _nfcResultDialogOpen = false;
+    }
   }
 
   Future<void> _handleMark(StudentModel student) async {

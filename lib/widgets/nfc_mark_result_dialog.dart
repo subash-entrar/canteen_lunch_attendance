@@ -17,6 +17,7 @@ Future<void> showNfcMarkResultDialog(
   return showDialog<void>(
     context: context,
     barrierDismissible: true,
+    useRootNavigator: true,
     builder: (ctx) => _NfcMarkResultDialog(
       result: result,
       autoCloseDuration: autoCloseDuration,
